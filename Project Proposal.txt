@@ -1,3 +1,5 @@
 DS Project
 
 Main topic ideas: astronomy, travelling, electronics
+
+Works: data researcher, coder(back-end), coder(front-end)
