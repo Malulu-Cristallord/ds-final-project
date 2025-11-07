@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "google.api.key",
+    "type": "java.lang.String",
+    "description": "A description for 'google.api.key'"
+  },
+  {
+    "name": "google.cse.id",
+    "type": "java.lang.String",
+    "description": "A description for 'google.cse.id'"
+  }
+]}
