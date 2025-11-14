@@ -21,9 +21,15 @@
 	<div class="main">
     <div class="title"><h2>Search engine for travelling in southern Taiwan</h2></div>
     <p>Type in anything you desire then click on search!</p>
-    <label for="username">Search for:</label>
+    <label for="query">Search for:</label>
 	<input type="text" id="username" name="username">
 	<button type="button">Search!</button>
+	<script>
+		const button = document.querySelector("button");
+		button.addEventListener("click", () => {
+			const query = document.getElementById("username").value
+		});
+	</script>
 	</div>
 </body>
 </html>
