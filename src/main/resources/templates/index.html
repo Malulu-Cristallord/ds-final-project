@@ -18,10 +18,17 @@
 		<div th:if="${searchResults != null}">
 			<h2>Search results for "<span th:text="${query}"></span>":</h2>
 			<ul>
-				<li th:each="item : ${searchResults}">
-					<a th:href="${item.link}" th:text="${item.title}" target="_blank"></a>
-					<p th:text="${item.snippet}"></p>
-				</li>
+								<div th:if="${searchResults}">
+					<h2>搜尋結果: <span th:text="${query}"></span></h2>
+					<ul>
+						<li th:each="tree : ${searchResults}">
+							<a th:href="${tree.root.url}" th:text="${tree.root.url}"></a>
+
+							
+						</li>
+					</ul>
+				</div>
+
 			</ul>
 		</div>
   	</div>

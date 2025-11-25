@@ -1,17 +1,14 @@
 package com.example.ds_finalproject;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestTemplate;
 
 import jakarta.annotation.PostConstruct;
-
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import java.util.List;
 
 @Controller
 public class SearchController {
@@ -21,6 +18,9 @@ public class SearchController {
 
     @Value("${google.cse.id}")
     private String cseId;
+
+    @Autowired
+    private SearchService searchService;
 
     @PostConstruct
     public void checkKeys() {
@@ -37,18 +37,13 @@ public class SearchController {
     @GetMapping("/search")
     public String search(@RequestParam("query") String query, Model model) throws Exception {
 
-        String url = "https://www.googleapis.com/customsearch/v1?key=" + apiKey
-                     + "&cx=" + cseId
-                     + "&q=" + URLEncoder.encode(query, StandardCharsets.UTF_8);
+        // 呼叫 SearchService 拿搜尋結果
+        List<WebTree> searchResults = searchService.searchGoogle(query);
 
-        RestTemplate restTemplate = new RestTemplate();
-        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
-
-        // Add the whole response to the model
-        model.addAttribute("searchResults", response.get("items"));
+        // 加入 Model
+        model.addAttribute("searchResults", searchResults);
         model.addAttribute("query", query);
 
         return "index";
     }
 }
-
