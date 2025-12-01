@@ -1,10 +1,12 @@
 package com.example.ds_finalproject;
 
 public class Keyword {
-    private String word;
+    private String type, subtype, word;
     private double weight;
 
-    public Keyword(String word, double weight) {
+    public Keyword(String type, String subtype, String word, double weight) {
+        this.type = type;
+        this.subtype = subtype;
         this.word = word;
         this.weight = weight;
     }
@@ -12,7 +14,12 @@ public class Keyword {
     public String getWord() {
         return word;
     }
-
+    public String getType() {
+        return type;
+    }
+    public String getSubtype() {
+        return subtype;
+    }
     public double getWeight() {
         return weight;
     }

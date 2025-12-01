@@ -18,11 +18,8 @@ public class SearchService {
     @Value("${google.cse.id}")
     private String cseId;
 
-    private List<Keyword> keywords = List.of(
-            new Keyword("嘉義", 10),
-            new Keyword("旅遊", 8),
-            new Keyword("南部", 5)
-    );
+    private static final String KEYWORD_FILE = "static/KeywordList.txt";
+    private List<Keyword> keywords = readKeywords(KEYWORD_FILE);
 
     private static final int MAX_CHILD_PAGES = 3;
 
@@ -77,12 +74,50 @@ public class SearchService {
 
                 parent.addChild(child);
                 count++;}
+        }   catch (Exception e) {
+                System.err.println("Failed to fetch child pages for: " + parent.getUrl());
+                parent.setChildren(new ArrayList<>()); // 失敗就設空 list
+            }
+    }
+
+
+    private List<Keyword> readKeywords(String filename) {
+    List<Keyword> keywords = new ArrayList<>();
+
+    try (Scanner scanner = new Scanner(new java.io.File(filename), StandardCharsets.UTF_8)) {
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine().trim();
+
+            // Skip empty lines
+            if (line.isEmpty()) continue;
+
+            // Remove [ and ]
+            if (line.startsWith("[") && line.endsWith("]")) {
+                line = line.substring(1, line.length() - 1).trim();
+            }
+
+            String[] parts = line.split(",");
+
+            if (parts.length == 4) {
+                String type = parts[0].trim();
+                String subtype = parts[1].trim();
+                String word = parts[2].trim();
+                double weight = Double.parseDouble(parts[3].trim());
+
+                keywords.add(new Keyword(type, subtype, word, weight));
+                String debugMsg = String.format("Loaded keyword - Type: %s, Subtype: %s, Word: %s, Weight: %.2f",
+                        type, subtype, word, weight);
+                System.out.println(debugMsg);
+            }
+        }
     } catch (Exception e) {
-        System.err.println("Failed to fetch child pages for: " + parent.getUrl());
-        parent.setChildren(new ArrayList<>()); // 失敗就設空 list
+        System.err.println("Failed to read keywords from file: " + filename);
     }
+
+    return keywords;
 }
-    }
+
+}
 
 
     
