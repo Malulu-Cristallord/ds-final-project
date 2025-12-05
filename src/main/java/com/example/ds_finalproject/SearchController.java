@@ -13,21 +13,8 @@ import java.util.List;
 @Controller
 public class SearchController {
 
-    @Value("${google.api.key}")
-    private String apiKey;
-
-    @Value("${google.cse.id}")
-    private String cseId;
-
     @Autowired
     private SearchService searchService;
-
-    @PostConstruct
-    public void checkKeys() {
-        if (apiKey.isEmpty() || cseId.isEmpty()) {
-            throw new IllegalStateException("Google API key or CSE ID not set!");
-        }
-    }
 
     @GetMapping("/")
     public String index() {

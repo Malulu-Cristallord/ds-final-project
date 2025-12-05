@@ -1,8 +1,8 @@
 package com.example.ds_finalproject;
 
 public class Keyword {
-    private String type, subtype, word;
-    private double weight;
+    public final String type, subtype, word;
+    public final double weight;
 
     public Keyword(String type, String subtype, String word, double weight) {
         this.type = type;
