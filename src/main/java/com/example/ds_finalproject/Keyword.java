@@ -36,5 +36,6 @@ public class Keyword {
             index += wordLower.length();
         }
         node.addScore(count * weight);
+        if (count > 0) System.out.println("Add score for " + node.getTitle() + " (" + word + ")" + " Total score : " + node.getScore());
     }
 }

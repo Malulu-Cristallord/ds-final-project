@@ -15,6 +15,17 @@
 			<input type="text" name="query" placeholder="Search..." />
 			<button type="submit">Search</button>
 		</form>
+		<div th:if="${searchResults != null}">
+			<h2>搜尋結果: <span th:text="${query}"></span></h2>
+			<ul>
+				<li th:each="tree : ${searchResults}">
+					<a th:href="${tree.root.url}" th:text="${tree.root.title}"></a>
+					<span> - Score: <span th:text="${tree.root.score}"></span></span>
+					<br>
+					<span th:text="${tree.root.snippet}"></span>
+				</li>
+			</ul>
+		</div>
   	</div>
 </body>
 </html>

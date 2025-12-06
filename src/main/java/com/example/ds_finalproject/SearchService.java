@@ -6,81 +6,65 @@ import org.springframework.web.client.RestTemplate;
 
 import jakarta.annotation.PostConstruct;
 
-import org.jsoup.Jsoup;
-
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service
 public class SearchService {
 
-    @Value("${google.api.key}")
+    @Value("${serp.api.key}")
     private String apiKey;
-
-    @Value("${google.cse.id}")
-    private String cseId;
 
     @PostConstruct
     public void checkKeys() {
-        if (apiKey.isEmpty() || cseId.isEmpty()) {
+        if (apiKey.isEmpty()) {
             throw new IllegalStateException("Google API key or CSE ID not set!");
         }
     }
 
     private List<Keyword> keywords = KeywordList.KEYWORD_LIST;
 
-    private static final int MAX_CHILD_PAGES = 1;
+    //private static final int MAX_CHILD_PAGES = 1;
 
     public List<WebTree> searchGoogle(String query) throws Exception {
-        // Build URL for Google CSE API
-        String url = "https://www.googleapis.com/customsearch/v1?key=" + apiKey
-                + "&cx=" + cseId
-                + "&q=" + URLEncoder.encode(query, StandardCharsets.UTF_8)
-                + "&num=10"
-                + "&safe=off"
-                + "&lr="
-                + "&gl=tw";
+        
+        String url = "https://serpapi.com/search.json"
+           + "?q=" + query + " 台灣南部旅遊"
+           + "&hl=zh-TW"
+           + "&gl=tw"
+           + "&num=10"
+           + "&api_key=" + apiKey;
+
+        System.out.println("Request URL: " + url);
 
         RestTemplate restTemplate = new RestTemplate();
         Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
-        List<Map<String, Object>> items = (List<Map<String, Object>>) response.get("items");
+        List<Map<String, Object>> items = (List<Map<String, Object>>) response.get("organic_results");
         List<WebTree> resultTrees = new ArrayList<>();
 
         if (items != null) {
             for (Map<String, Object> item : items) {
                 String link = (String) item.get("link");
+                String title = (String) item.get("title");
                 String snippet = (String) item.get("snippet");
 
                 if (link == null || !link.startsWith("http")) continue;
-                
-                String content;
-                try {
-                    content = Jsoup.connect(link)
-                                .userAgent("Mozilla/5.0")
-                                .timeout(5000)
-                                .get()
-                                .text();
-                } catch (Exception e) {
-                    content = (String) item.get("snippet");
-                }
+                if (link.endsWith(".xml.gz") || link.endsWith(".pdf") || link.contains("apple.com")) continue;
 
-                WebNode root = new WebNode(link, content);
+                if (snippet == null) snippet = "";
+
+                WebNode root = new WebNode(link, title, snippet, snippet);
 
                 for (Keyword kw : keywords) {
                     kw.computeNode(root);
                 }
 
-                // addChildPages(root, MAX_CHILD_PAGES);
-
                 WebTree tree = new WebTree(root);
                 resultTrees.add(tree);
             }
         }
-        
-        resultTrees.sort((a,b) -> Double.compare(b.getTotalScore(), a.getTotalScore()));
+
+        resultTrees.sort((a, b) -> Double.compare(b.getTotalScore(), a.getTotalScore()));
         return resultTrees;
     }
     

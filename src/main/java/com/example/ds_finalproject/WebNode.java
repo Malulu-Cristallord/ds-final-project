@@ -5,21 +5,33 @@ import java.util.List;
 
 public class WebNode {
     private String url;
+    private String title;
     private String content;
+    private String snippet;
     private double score = 0.0;
     private List<WebNode> children = new ArrayList<>();
 
-    public WebNode(String url, String content) {
+    public WebNode(String url, String title, String content, String snippet) {
         this.url = url;
+        this.title = title;
         this.content = content;
+        this.snippet = snippet;
     }
 
     public String getUrl() {
         return url;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
     public String getContent() {
         return content;
+    }
+
+    public String getSnippet() {
+        return snippet;
     }
 
     public double getScore() {
@@ -31,7 +43,6 @@ public class WebNode {
     }
 
     public void setChildren( List<WebNode> children) {
-       
         this.children = children;
     }
 
