@@ -1,31 +1,58 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-	<link rel="stylesheet" th:href="@{/css/pageStyle.css}">
+	<link rel="stylesheet" th:href="@{/css/search.css}">
+	<script type="text/javascript" th:src="@{/js/infoBtn.js}"></script>
 	<meta charset="UTF-8">
   	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>DS_FinalProject</title>
 </head>
 <body>
-	<button class="info-button" onclick="alert('This search engine is still in construction,'+
+	<button class="info-button" onclick="showInfo('This search engine is still in construction,'+
 	' do not use for any activity illegal.')">Info</button>
   	<div class="search-container">
 		<label class="search-label" for="searchInput">Search engine for travelling in southern Taiwan</label>
 		<form th:action="@{/search}" method="get">
 			<input type="text" name="query" placeholder="Search..." />
 			<button type="submit">Search</button>
+			<label class="regionLabel" for="regions">Choose a region:</label>
+			<select id="regionSelect" name="region">
+				<option value="nonSpecific" th:selected="${region == null or region == 'nonSpecific'}">不指定</option>
+				<option value="Chiayi">嘉義</option>
+				<option value="Tainan">台南</option>
+				<option value="Kaohsiung">高雄</option>
+				<option value="Pingtung">屏東</option>
+			</select>
 		</form>
+		
 		<div th:if="${searchResults != null}">
 			<h2>搜尋結果: <span th:text="${query}"></span></h2>
-			<ul>
-				<li th:each="tree : ${searchResults}">
-					<a th:href="${tree.root.url}" th:text="${tree.root.title}"></a>
-					<span> - Score: <span th:text="${tree.root.score}"></span></span>
-					<br>
-					<span th:text="${tree.root.snippet}"></span>
-				</li>
-			</ul>
+
+			<div class="result-container">
+				<div class="result-block" th:each="tree : ${searchResults}">
+					<a class="result-title" th:href="${tree.root.url}"
+					th:text="${tree.root.title}"></a>
+
+					<div class="result-score">
+						Score: <span th:text="${tree.root.score}"></span>
+					</div>
+
+					<p class="result-snippet" th:text="${tree.root.snippet}"></p>
+				</div>
+			</div>
+
 		</div>
+
+		<button class="back-button" onclick="window.location.href='/'">Back to Home</button>
   	</div>
+
+	<div id="infoModal" class="modal">
+		<div class="modal-content">
+			<span class="close-btn" onclick="closeModal()">&times;</span>
+
+			<h2>Info</h2>
+			<p id="infoText">Information popup text</p>
+		</div>
+	</div>
 </body>
 </html>

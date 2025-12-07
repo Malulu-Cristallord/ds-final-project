@@ -8,14 +8,14 @@
         justify-content: center;
         align-items: center;
         font-family: Arial, sans-serif;
-        background: linear-gradient(235deg, #bdbdbd, #ffffff);
-        background-size: 800% 800%;
+        background: linear-gradient(235deg, #b2f6ff, #9effbb);
+        background-size: 200% 200%;
         overflow-y: auto;
     }
 
     .info-button{
         position: fixed;
-        top: 20px;
+        bottom: 20px;
         right: 20px;
         padding: 10px 18px;
         border: none;
@@ -34,7 +34,7 @@
     }
 
     .search-container {
-        background-color: rgba(255,255,255,1.0);
+        background-color: rgba(255,255,255,0.5);
         padding: 20px 30px;
         border-radius: 15px;
         text-align: center;
@@ -78,10 +78,46 @@
     button:hover {
         background-color: #3367d6;
     }
+
+    .regionLabel {
+        padding: 0px 10px;
+        font-size: 16px;
+        outline: none;
+    }
     
-    .response {
-        margin-top: 0px;
-        font-weight: bold;
-        font-size: 18px;
-        color: #333;
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: #fff;
+        padding: 10px 15px;
+        border-radius: 10px;
+        width: 300px;
+        max-width: 90%;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        position: relative;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .close-btn {
+        position: absolute;
+        right: 15px;
+        top: 10px;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to   { opacity: 1; transform: scale(1); }
     }

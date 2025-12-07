@@ -25,10 +25,35 @@ public class SearchService {
 
     //private static final int MAX_CHILD_PAGES = 1;
 
-    public List<WebTree> searchGoogle(String query) throws Exception {
+    public List<WebTree> searchGoogle(String query, String region) throws Exception {
+        String extraSearchTerm="";
+        if (region == null) {
+            extraSearchTerm = "台灣南部旅遊";
+        } else {
+            switch (region) {
+                case "nonSpecific":
+                    extraSearchTerm = "台灣南部旅遊";
+                    break;
+                case "Chiayi":
+                    extraSearchTerm = "嘉義旅遊";
+                    break;
+                case "Tainan":
+                    extraSearchTerm = "台南旅遊";
+                    break;
+                case "Kaohsiung":
+                    extraSearchTerm = "高雄旅遊";
+                    break;
+                case "Pingtung":
+                    extraSearchTerm = "屏東旅遊";
+                    break;
+                default:
+                    extraSearchTerm = "台灣南部旅遊";
+                    break;
+            }
+        }
         
         String url = "https://serpapi.com/search.json"
-           + "?q=" + query + " 台灣南部旅遊"
+           + "?q=" + query + " " + extraSearchTerm
            + "&hl=zh-TW"
            + "&gl=tw"
            + "&num=10"

@@ -27,7 +27,7 @@ public class Keyword {
     // 計算這個 keyword 在 WebNode 的內容出現次數並加分
     public void computeNode(WebNode node) {
         if (node == null || node.getContent() == null) return;
-        String contentLower = node.getContent().toLowerCase();
+        String contentLower = node.getContent().toLowerCase() + node.getTitle().toLowerCase();
         String wordLower = word.toLowerCase();
         int count = 0;
         int index = 0;

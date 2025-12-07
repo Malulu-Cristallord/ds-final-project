@@ -20,14 +20,15 @@ public class SearchController {
     }
 
     @GetMapping("/search")
-    public String search(@RequestParam("query") String query, Model model) throws Exception {
+    public String search(@RequestParam("query") String query, @RequestParam(name="region", required=false) String region, Model model) throws Exception {
 
         // 呼叫 SearchService 拿搜尋結果
-        List<WebTree> searchResults = searchService.searchGoogle(query);
+        List<WebTree> searchResults = searchService.searchGoogle(query, region);
 
         // 加入 Model
         model.addAttribute("searchResults", searchResults);
         model.addAttribute("query", query);
+        model.addAttribute("region", region);
 
         return "search";
     }
