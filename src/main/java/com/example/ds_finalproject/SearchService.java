@@ -1,11 +1,13 @@
 package com.example.ds_finalproject;
 
+import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import jakarta.annotation.PostConstruct;
 
+import java.net.URI;
 import java.util.*;
 
 @Service
@@ -22,8 +24,6 @@ public class SearchService {
     }
 
     private List<Keyword> keywords = KeywordList.KEYWORD_LIST;
-
-    //private static final int MAX_CHILD_PAGES = 1;
 
     public List<WebTree> searchGoogle(String query, String region) throws Exception {
         String extraSearchTerm="";
@@ -84,48 +84,87 @@ public class SearchService {
                     kw.computeNode(root);
                 }
 
+                addChildPages(root, MAX_CHILD_PAGES);
+
                 WebTree tree = new WebTree(root);
                 resultTrees.add(tree);
+
             }
         }
+            
+
 
         resultTrees.sort((a, b) -> Double.compare(b.getTotalScore(), a.getTotalScore()));
         return resultTrees;
     }
+    private static final int MAX_CHILD_PAGES = 3;
+private static final int TIMEOUT = 5000;
+
     
-    // private void addChildPages(WebNode parent, int maxChildren) {
-    //     try {
-    //         org.jsoup.nodes.Document doc = Jsoup.connect(parent.getUrl()).get();
-    //         org.jsoup.select.Elements links = doc.select("a[href]");
-    //         int count = 0;
+ private int addChildPages(WebNode parent, int maxChildren) {
+    int count = 0;
 
-    //         URI parentUri = new URI(parent.getUrl());
-    //         String parentDomain = parentUri.getHost();
+    try {
+        org.jsoup.nodes.Document doc = Jsoup
+                .connect(parent.getUrl())
+                .timeout(5000)
+                .userAgent("Mozilla/5.0")
+                .get();
 
-    //         for (org.jsoup.nodes.Element link : links) {
-    //             if (count >= maxChildren) break;
+        org.jsoup.select.Elements links = doc.select("a[href]");
 
-    //             String childUrl = link.absUrl("href");
-    //             if (childUrl.isEmpty()) continue;
-    //             if (!childUrl.startsWith("http")) continue;
-    //             if (childUrl.matches(".*(\\.xml|\\.gz|\\.pdf|\\.jpg|\\.png)$")) continue;
+        URI parentUri = new URI(parent.getUrl());
+        String parentDomain = parentUri.getHost();
 
-    //             URI childUri = new URI(childUrl);
-    //             if (!childUri.getHost().endsWith(parentDomain)) continue;
+        for (org.jsoup.nodes.Element link : links) {
+            if (count >= maxChildren) break;
 
-    //             String content = Jsoup.connect(childUrl).get().text();
-    //             WebNode child = new WebNode(childUrl, content);
+            String childUrl = link.absUrl("href");
 
-    //             for (Keyword kw : keywords) {
-    //                 kw.computeNode(child);
-    //             }
+            if (childUrl.isEmpty()) continue;
+            if (!childUrl.startsWith("http")) continue;
+            if (childUrl.matches(".*(\\.xml|\\.gz|\\.pdf|\\.jpg|\\.png)$")) continue;
 
-    //             parent.addChild(child);
-    //             count++;
-    //         }
-    //     } catch (Exception e) {
-    //         System.err.println("Failed to fetch child pages for: " + parent.getUrl());
-    //         parent.setChildren(new ArrayList<>());
-    //     }
-    // }
+            URI childUri = new URI(childUrl);
+            if (childUri.getHost() == null) continue;
+            if (!childUri.getHost().endsWith(parentDomain)) continue;
+
+            org.jsoup.nodes.Document childDoc = Jsoup
+                    .connect(childUrl)
+                    .timeout(5000)
+                    .userAgent("Mozilla/5.0")
+                    .get();
+
+            WebNode child = new WebNode(
+                    childUrl,
+                    childDoc.title(),
+                    childDoc.text(),
+                    childDoc.text()
+            );
+
+            for (Keyword kw : keywords) {
+                kw.computeNode(child);
+                //System.out.println("Child Page Keyword Score Computed: " + child.getTitle() + " (" + kw.getWord() + ") Total score : " + child.getScore());    
+            }
+
+            parent.addChild(child);
+            parent.setHasChildren(true);
+            count++;
+
+            System.out.println("[ChildPage] " + parent.getUrl() + " -> " + childUrl);
+        }
+
+        if (count == 0) {
+            System.out.println("[ChildPage] No child pages found for: " + parent.getUrl());
+        }
+
+    } catch (Exception e) {
+        System.err.println("[ChildPage] ERROR for: " + parent.getUrl());
+        
+    }
+
+    return count;
+}
+
+
 }

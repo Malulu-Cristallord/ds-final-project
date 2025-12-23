@@ -18,6 +18,16 @@ public class WebNode {
         this.snippet = snippet;
     }
 
+    private boolean hasChildren = false;
+
+    public boolean hasChildren() {
+        return hasChildren;
+    }
+
+    public void setHasChildren(boolean hasChildren) {
+        this.hasChildren = hasChildren;
+    }
+
     public String getUrl() {
         return url;
     }
@@ -56,7 +66,7 @@ public class WebNode {
 
     // 計算子節點的累積分數
     public double getTotalScore() {
-        double total = score;
+        double total = getScore();
         for (WebNode child : children) {
             total += child.getTotalScore();
         }
